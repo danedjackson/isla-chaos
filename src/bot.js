@@ -18,6 +18,7 @@ var { growPrompts, injectPrompts, slayPrompts, buyPrompts, showDinos, redeemProm
 var { processFileTransfer, deleteFile } = require('./functions/fileTransfer');
 var { getSteamID, updateSteamID, addSteamID } = require('./api/steamManager');
 var { getUserDinos, addDino, giveDino } = require('./functions/buyDinos');
+var { getDinoPrice } = require('./functions/pricelist');
 const updateCount = require('./functions/serverPop');
 
 var serverCount;
@@ -57,7 +58,6 @@ function channelIdCheck(channel, cmd) {
 
 discordClient.on("ready", () => {
     console.log(`Successfully logged in.`);
-    serverCountLoop();
 });
 
 
@@ -104,9 +104,18 @@ discordClient.on("message", async message => {
 
         if ( !channelIdCheck(message.channel.id, "grow") ) return message.reply(`please use <#${channelIds.growChannel}>`);
 
-        if( args.length > 0 ) return message.reply(`please use the following format:\n${prefix}grow`);
+        if( args.length != 3 ) return message.reply(`please use the following format:\n${prefix}grow Utah F 76561234567890123`);
 
-        var growRequest = await growPrompts(message);
+        if(!args[1].toLowerCase().toLowerCase().startsWith("f") && !args[1].toLowerCase().toLowerCase().startsWith("m")) {
+            return message.reply(`incorrect format, here's an example:\n${prefix}grow Utah F 76561234567890123`);
+        }
+
+        var growRequest = await getDinoPrice(args[0]);
+        if (growRequest[1] == null) return message.reply(`something went wrong, did you enter the correct dino name?`);
+
+        (await growRequest).push(args[2]);
+
+        // var growRequest = await growPrompts(message);
         console.log(`grow request: ${growRequest}`);
         
         if(!growRequest) return;
