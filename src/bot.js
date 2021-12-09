@@ -134,7 +134,6 @@ discordClient.on("message", async message => {
 
     if ( cmdName.toLowerCase() === "inject" ) {
         //TODO: Remove this return if this feature is going to be used
-        return;
         if ( !channelIdCheck(message.channel.id, "inject") ) return message.reply(`please use <#${channelIds.growChannel}>`);
 
         if( args.length > 0 ) return message.reply(`please use the following format:\n${prefix}inject`);
